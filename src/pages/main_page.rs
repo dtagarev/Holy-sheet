@@ -45,6 +45,16 @@ impl MainPage {
         }
         container.append(&btn_three);
 
+        // Бутон за EditPage
+        let btn_edit = Button::with_label("Create/Edit Cheatsheet");
+        {
+            let stack_clone = stack.clone();
+            btn_edit.connect_clicked(move |_| {
+                stack_clone.set_visible_child_name("edit_page");
+            });
+        }
+        container.append(&btn_edit);
+
         Self { container, stack }
     }
 }

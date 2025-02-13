@@ -2,6 +2,7 @@ pub mod main_page;
 pub mod page_one;
 pub mod page_two;
 pub mod page_three;
+pub mod edit_page;
 
 use gtk4::Widget;
 
@@ -17,3 +18,4 @@ pub use main_page::MainPage;
 pub use page_one::PageOne;
 pub use page_two::PageTwo;
 pub use page_three::PageThree;
+pub use edit_page::EditPage;

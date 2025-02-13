@@ -2,7 +2,7 @@ use anyhow::Result;
 use gtk4::prelude::*;
 use gtk4::{Application, ApplicationWindow, Stack};
 use crate::pages::{
-    AppPage, MainPage, PageOne, PageThree, PageTwo
+    AppPage, MainPage, PageOne, PageThree, PageTwo, EditPage
 };
 
 pub fn run_app() -> Result<()> {
@@ -27,6 +27,7 @@ pub fn run_app() -> Result<()> {
         let page_one = PageOne::new(stack.clone());
         let page_two = PageTwo::new(stack.clone());
         let page_three = PageThree::new(stack.clone());
+        let edit_page = EditPage::new(stack.clone());
 
         // Добавяме всяка страница в Stack с уникално име (ID).
         // Така после можем да викаме stack.set_visible_child_name("main") например.
@@ -34,6 +35,7 @@ pub fn run_app() -> Result<()> {
         add_page_to_stack(&stack, &page_one, "page_one");
         add_page_to_stack(&stack, &page_two, "page_two");
         add_page_to_stack(&stack, &page_three, "page_three");
+        add_page_to_stack(&stack, &edit_page, "edit_page");
 
         // По подразбиране показваме главната страница
         stack.set_visible_child_name("main");
