@@ -1,6 +1,6 @@
 mod app;
 mod pages;
-mod web_view_mode;
+// mod web_view_mode;
 use anyhow::Result;
 use clap::{Arg, ArgAction, Command};
 
@@ -24,6 +24,6 @@ fn main() -> Result<()> {
     // // Извличаме стойността на --show (ако е подадена)
     // let show_what = matches.get_one::<String>("show").map(|s| s.as_str());
 
-    web_view_mode::run_webview_mode("test.md");
+    // web_view_mode::run_webview_mode("test.md");
     app::run_app()
 }

@@ -11,15 +11,16 @@ path = "src/main.rs"
 [dependencies]
 # CLI парсване
 anyhow = "1.0"
-clap = { version = "4.5.28", features = ["derive"] }
+clap = { version = "4.5.29", features = ["derive"] }
 
 # GTK4
-wry = "0.48.1"
+# web-view = "0.7.3"
+# wry = "0.48.1"
 gtk4 = "0.9.5"
 glib = "0.20.7"
 gdk4 = "0.9.5"
 webkit2gtk = { version = "2.0.1", features = ["v2_34"] }   
-pulldown-cmark = "0.12.2"    # From Markdown -> HTML
+pulldown-cmark = "0.13.0"    # From Markdown -> HTML
 # За четене на конфигурационни пътища (XDG dirs)
 directories = "6.0.0"
 
