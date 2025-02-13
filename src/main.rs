@@ -25,5 +25,6 @@ fn main() -> Result<()> {
     // let show_what = matches.get_one::<String>("show").map(|s| s.as_str());
 
     // web_view_mode::run_webview_mode("test.md");
+    pages::markdown_viewer::run_markdown_viewer("test.md");
     app::run_app()
 }

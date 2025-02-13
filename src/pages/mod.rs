@@ -3,6 +3,7 @@ pub mod page_one;
 pub mod page_two;
 pub mod page_three;
 pub mod edit_page;
+pub mod markdown_viewer;
 
 use gtk4::Widget;
 
