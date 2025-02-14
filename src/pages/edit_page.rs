@@ -17,26 +17,25 @@ pub struct EditPage {
 
 impl EditPage {
     pub fn new(stack: Stack, app: gtk::Application) -> Self {
-        // Главен контейнер за вертикално подреждане
         let container = GtkBox::new(Orientation::Vertical, 8);
 
-        // Заглавен текст
+        // Title
         let label = Label::new(Some("Edit your cheatsheet"));
         container.pack_start(&label, false, false, 0);
 
-        // Поле за въвеждане на име на файла
+        // File name field
         let entry = Entry::new();
         entry.set_placeholder_text(Some("Enter file name"));
         container.pack_start(&entry, false, false, 0);
 
-        // Създаваме TextView за редактиране на съдържанието
+        //Create a TextView for editing the content
         let text_view = TextView::new();
         let scrolled = ScrolledWindow::new(None::<&gtk::Adjustment>, None::<&gtk::Adjustment>);
         scrolled.set_policy(gtk::PolicyType::Automatic, gtk::PolicyType::Automatic);
         scrolled.add(&text_view);
         container.pack_start(&scrolled, true, true, 0);
 
-        // Бутон за запазване
+        // BUTTONS
         let save_btn = Button::with_label("Save");
         {
             let entry_clone = entry.clone();
@@ -52,17 +51,6 @@ impl EditPage {
         }
         container.pack_start(&save_btn, false, false, 0);
 
-        // Бутон за връщане към главната страница
-        let back_btn = Button::with_label("Back to Main");
-        {
-            let stack_clone = stack.clone();
-            back_btn.connect_clicked(move |_| {
-                stack_clone.set_visible_child_name("main");
-            });
-        }
-        container.pack_start(&back_btn, false, false, 0);
-
-        // Бутон за преглед
         let preview_btn = Button::with_label("Preview");
         {
             let app_clone = app.clone();
@@ -76,6 +64,16 @@ impl EditPage {
             });
         }
         container.pack_start(&preview_btn, false, false, 0);
+
+        let back_btn = Button::with_label("Back to Main");
+        {
+            let stack_clone = stack.clone();
+            back_btn.connect_clicked(move |_| {
+                stack_clone.set_visible_child_name("main");
+            });
+        }
+        container.pack_start(&back_btn, false, false, 0);
+
         Self { container, stack, text_view, entry, app }
     }
 
@@ -102,7 +100,7 @@ impl AppPage for EditPage {
     }
 }
 
-/// Save teh content to a file in `~/.config/holy-sheet/cheatsheets/<filename>`.
+/// Save the content to a file in `~/.config/holy-sheet/cheatsheets/<filename>`.
 fn save_file(filename: &str, content: &str) -> Result<(), String> {
     let proj_dirs = ProjectDirs::from("com", "example", "holy-sheet")
         .ok_or("Could not locate config directory")?;

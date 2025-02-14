@@ -18,23 +18,12 @@ impl MainPage {
 
         let label = Label::new(Some("Holy sheet"));
         let label2 = Label::new(Some("The ultimate cheatsheet manager"));
-        label.style_context().add_class("title"); // Apply title class
-        label2.style_context().add_class("subtitle"); // Apply subtitle class
+        label.style_context().add_class("title"); 
+        label2.style_context().add_class("subtitle"); 
         container.pack_start(&label, false, false, 0);
         container.pack_start(&label2, false, false, 0);
 
-        // Бутон за PageOne
-        let btn_one = Button::with_label("Go to Page ONE");
-        btn_one.style_context().add_class("button");
-        {
-            let stack_clone = stack.clone();
-            btn_one.connect_clicked(move |_| {
-                stack_clone.set_visible_child_name("page_one");
-            });
-        }
-        container.pack_start(&btn_one, false, false, 0);
-
-        // Бутон за ConfigurationsPage
+        // ConfigurationsPage button
         let btn_two = Button::with_label("Go to CheatSheets");
         btn_two.style_context().add_class("button");
         {
@@ -45,18 +34,7 @@ impl MainPage {
         }
         container.pack_start(&btn_two, false, false, 0);
 
-        // Бутон за PageThree
-        let btn_three = Button::with_label("Go to Page THREE");
-        btn_three.style_context().add_class("button");
-        {
-            let stack_clone = stack.clone();
-            btn_three.connect_clicked(move |_| {
-                stack_clone.set_visible_child_name("page_three");
-            });
-        }
-        container.pack_start(&btn_three, false, false, 0);
-
-        // Бутон за EditPage
+        // EditPage button
         let btn_edit = Button::with_label("Create/Edit Cheatsheet");
         btn_edit.style_context().add_class("button");
         {
@@ -66,6 +44,11 @@ impl MainPage {
             });
         }
         container.pack_start(&btn_edit, false, false, 0);
+
+        // Add a spacer element at the bottom
+        let spacer = GtkBox::new(Orientation::Vertical, 0);
+        spacer.set_size_request(-1, 40); // Set the height of the spacer
+        container.pack_start(&spacer, false, false, 0);
 
         Self { container, stack }
     }

@@ -31,7 +31,7 @@ pub fn setup_markdown_viewer(app: &Application, file_name: &str) -> Result<(), B
     Ok(())
 }
 
-pub fn run_markdown_viewer(file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub fn run_markdown_viewer_as_an_app(file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
     gtk::init().expect("Failed to initialize GTK");
 
     let application = Application::new(
