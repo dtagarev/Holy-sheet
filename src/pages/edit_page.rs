@@ -2,17 +2,14 @@ use gtk::prelude::*;
 use gtk::{Box as GtkBox, Orientation, Button, Label, Stack, TextView, ScrolledWindow, Entry};
 use directories::ProjectDirs;
 use std::fs;
-use std::path::PathBuf;
 
 use super::AppPage;
 
 #[derive(Clone)]
 pub struct EditPage {
     container: GtkBox,
-    stack: Stack,
     text_view: TextView,
     entry: Entry,
-    app: gtk::Application,
 }
 
 impl EditPage {
@@ -74,7 +71,7 @@ impl EditPage {
         }
         container.pack_start(&back_btn, false, false, 0);
 
-        Self { container, stack, text_view, entry, app }
+        Self { container, text_view, entry } 
     }
 
     pub fn load_configuration(&self, filename: &str) {

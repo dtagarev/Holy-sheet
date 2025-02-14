@@ -2,15 +2,12 @@ use gtk::prelude::*;
 use gtk::{Box as GtkBox, Orientation, Button, Label, Stack, ListBox, ListBoxRow};
 use directories::ProjectDirs;
 use std::fs;
-use std::path::PathBuf;
 
 use super::{AppPage, EditPage};
 
 #[derive(Clone)]
 pub struct ConfigurationsPage {
     container: GtkBox,
-    stack: Stack,
-    edit_page: EditPage,
 }
 
 impl ConfigurationsPage {
@@ -49,7 +46,7 @@ impl ConfigurationsPage {
         }
         container.pack_start(&back_btn, false, false, 0);
 
-        Self { container, stack, edit_page }
+        Self { container }
     }
 }
 

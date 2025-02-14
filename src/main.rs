@@ -42,7 +42,6 @@ fn main() -> Result<()> {
         } else if contains_show {
 
             if let Some(file_name) = cmd_line.options_dict().lookup_value("show", None) {
-                println!("Filename: {:?}", file_name.to_string().trim_matches('\''));
                 if let Err(e) = pages::markdown_viewer::setup_markdown_viewer(app, 
                     &(file_name.to_string().trim_matches('\'').to_string() + ".md")) {
                     eprintln!("Error running markdown viewer: {:?}", e);

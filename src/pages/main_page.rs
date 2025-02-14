@@ -5,7 +5,6 @@ use super::AppPage;
 #[derive(Clone)]
 pub struct MainPage {
     container: GtkBox,
-    stack: Stack,
 }
 
 impl MainPage {
@@ -50,7 +49,7 @@ impl MainPage {
         spacer.set_size_request(-1, 40); // Set the height of the spacer
         container.pack_start(&spacer, false, false, 0);
 
-        Self { container, stack }
+        Self { container }
     }
 }
 
