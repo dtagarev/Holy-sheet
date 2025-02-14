@@ -5,43 +5,35 @@ use crate::pages::{
     AppPage, MainPage, PageOne, PageThree, PageTwo, EditPage
 };
 
-pub fn run_app() -> Result<()> {
-    let app = Application::new(
-        Some("com.example.holy-sheet"),
-        Default::default(),
-    );
+pub fn run_app_with_application(app: &Application) -> Result<()> {
+    let window = ApplicationWindow::new(app);
+    window.set_title("Holy Sheet - 4 Pages Example");
+    window.set_default_size(600, 400);
 
-    app.connect_activate(|app| {
-        let window = ApplicationWindow::new(app);
-        window.set_title("Holy Sheet - 4 Pages Example");
-        window.set_default_size(600, 400);
+    // Създаваме Stack, което ще държи всички страници
+    let stack = Stack::new();
+    stack.set_transition_type(gtk::StackTransitionType::SlideLeftRight);
+    stack.set_transition_duration(200);
 
-        // Създаваме Stack, което ще държи всички страници
-        let stack = Stack::new();
-        stack.set_transition_type(gtk::StackTransitionType::SlideLeftRight);
-        stack.set_transition_duration(200);
+    // Създаваме екземпляри на страниците. В конструктора
+    // подаваме &stack, за да могат те да превключват към друга страница.
+    let main_page = MainPage::new(stack.clone());
+    let page_one = PageOne::new(stack.clone());
+    let page_two = PageTwo::new(stack.clone());
+    let page_three = PageThree::new(stack.clone());
+    let edit_page = EditPage::new(stack.clone());
 
-        // Създаваме екземпляри на страниците. В конструктора
-        // подаваме &stack, за да могат те да превключват към друга страница.
-        let main_page = MainPage::new(stack.clone());
-        let page_one = PageOne::new(stack.clone());
-        let page_two = PageTwo::new(stack.clone());
-        let page_three = PageThree::new(stack.clone());
-        let edit_page = EditPage::new(stack.clone());
+    // Добавяме страниците в Stack
+    add_page_to_stack(&stack, &main_page, "main");
+    add_page_to_stack(&stack, &page_one, "page_one");
+    add_page_to_stack(&stack, &page_two, "page_two");
+    add_page_to_stack(&stack, &page_three, "page_three");
+    add_page_to_stack(&stack, &edit_page, "edit_page");
 
-        // Добавяме страниците в Stack
-        add_page_to_stack(&stack, &main_page, "main");
-        add_page_to_stack(&stack, &page_one, "page_one");
-        add_page_to_stack(&stack, &page_two, "page_two");
-        add_page_to_stack(&stack, &page_three, "page_three");
-        add_page_to_stack(&stack, &edit_page, "edit_page");
+    // Слагаме Stack в прозореца
+    window.add(&stack);
+    window.show_all();
 
-        // Слагаме Stack в прозореца
-        window.add(&stack);
-        window.show_all();
-    });
-
-    app.run();
     Ok(())
 }
 

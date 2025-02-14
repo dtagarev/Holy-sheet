@@ -14,7 +14,7 @@ pub fn run_markdown_viewer(file_name: &str) -> Result<(), Box<dyn std::error::Er
     gtk::init().expect("Failed to initialize GTK");
 
     let application = Application::new(
-        Some("com.example.holy-sheet"),
+        Some("com.markdown.holy-sheet"),
         Default::default(),
     );
 
@@ -42,7 +42,7 @@ pub fn run_markdown_viewer(file_name: &str) -> Result<(), Box<dyn std::error::Er
 }
 
 fn load_markdown_file(filename: &str) -> Result<String, String> {
-    let proj_dirs = ProjectDirs::from("com", "example", "holy-sheet")
+    let proj_dirs = ProjectDirs::from("com", "markdown", "holy-sheet")
         .ok_or("Could not locate config directory")?;
     let config_dir = proj_dirs.config_dir().join("cheatsheets");
     let file_path = config_dir.join(filename);

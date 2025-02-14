@@ -2,28 +2,42 @@ mod app;
 mod pages;
 
 use anyhow::Result;
-use clap::{Parser};
-
-#[derive(Parser, Debug)]
-#[command(version, about, long_about = None)]
-struct Args {
-    /// Name of the cheatsheet to load
-    #[arg(long)]
-    show: Option<String>,
-}
+use gtk::prelude::*;
+use gtk::Application;
+use std::env;
 
 fn main() -> Result<()> {
-    let args = Args::parse();
+    let args: Vec<String> = env::args().collect();
 
-    // Check if the --show argument is provided
-    if let Some(file_name) = args.show {
-        println!("Filename: {:?}", file_name);
-        if let Err(e) = pages::markdown_viewer::run_markdown_viewer(&file_name) {
-            eprintln!("Error running markdown viewer: {:?}", e);
-        }
-    } else {
-        app::run_app()?;
+    let application = Application::new(
+        Some("com.app.holy-sheet"),
+        Default::default(),
+    );
+
+    application.connect_activate(move |app| {
+        // Check if the --show argument is provided
+        // if args.len() > 1 && args[1] == "--show" {
+        //     if args.len() > 2 {
+        //         let file_name = &args[2];
+        //         println!("Filename: {:?}", file_name);
+                // if let Err(e) = pages::markdown_viewer::run_markdown_viewer("test.md") {
+                //     eprintln!("Error running markdown viewer: {:?}", e);
+                // }
+        //     } else {
+        //         eprintln!("Error: No filename provided for --show argument");
+        //     }
+        // } else {
+            // if let Err(e) = app::run_app_with_application(app) {
+            //     eprintln!("Error running app: {:?}", e);
+            // }
+        // }
+    });
+
+    if let Err(e) = pages::markdown_viewer::run_markdown_viewer("test.md") {
+        eprintln!("Error running markdown viewer: {:?}", e);
     }
+    
+    // application.run();
 
     Ok(())
 }
