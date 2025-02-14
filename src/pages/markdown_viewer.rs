@@ -1,9 +1,9 @@
 use directories::ProjectDirs;
 use gtk::prelude::*;
-use gtk::{Application, ApplicationWindow, Box as GtkBox, Button, Label, Orientation};
+use gtk::{Application, ApplicationWindow};
 use pulldown_cmark::{html, Options, Parser};
-use std::fs;
 use std::env;
+use std::fs;
 use webkit2gtk::WebView;
 use webkit2gtk::WebViewExt;
 
@@ -61,32 +61,18 @@ fn markdown_to_html(md_text: &str) -> String {
     let mut html_buf = String::new();
     html::push_html(&mut html_buf, parser);
 
-    let css = r#"
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 1rem;
-        }
-        h1, h2, h3 {
-            color: #2d76d9;
-        }
-        code {
-            background: #f4f4f4;
-            padding: 2px 4px;
-            border-radius: 4px;
-        }
-    </style>
-    "#;
+    let css = fs::read_to_string("src/pages/style/dark_theme.css")
+        .expect("Failed to read CSS file");
 
     format!(
         r#"<!DOCTYPE html>
-<html>
-<head>{css}</head>
-<body>
-{content}
-</body>
-</html>
-"#,
+        <html>
+        <head><style>{css}</style></head>
+        <body>
+        {content}
+        </body>
+        </html>
+        "#,
         css = css,
         content = html_buf
     )

@@ -1,0 +1,17 @@
+body {
+    font-family: sans-serif;
+    margin: 1rem;
+    background-color: #2A2E32;
+    color: #e0e0e0;
+}
+
+h1, h2, h3 {
+    color: #bb86fc;
+}
+
+code {
+    background: #1e1e1e;
+    padding: 2px 4px;
+    border-radius: 4px;
+    color: #d4d4d4;
+}
