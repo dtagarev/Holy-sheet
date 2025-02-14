@@ -25,12 +25,12 @@ impl MainPage {
         }
         container.pack_start(&btn_one, false, false, 0);
 
-        // Бутон за PageTwo
-        let btn_two = Button::with_label("Go to Page TWO");
+        // Бутон за ConfigurationsPage
+        let btn_two = Button::with_label("Go to CheatSheets");
         {
             let stack_clone = stack.clone();
             btn_two.connect_clicked(move |_| {
-                stack_clone.set_visible_child_name("page_two");
+                stack_clone.set_visible_child_name("configurations_page");
             });
         }
         container.pack_start(&btn_two, false, false, 0);

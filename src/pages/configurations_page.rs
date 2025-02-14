@@ -7,13 +7,13 @@ use std::path::PathBuf;
 use super::{AppPage, EditPage};
 
 #[derive(Clone)]
-pub struct PageTwo {
+pub struct ConfigurationsPage {
     container: GtkBox,
     stack: Stack,
     edit_page: EditPage,
 }
 
-impl PageTwo {
+impl ConfigurationsPage {
     pub fn new(stack: Stack, edit_page: EditPage) -> Self {
         let container = GtkBox::new(Orientation::Vertical, 8);
 
@@ -53,7 +53,7 @@ impl PageTwo {
     }
 }
 
-impl AppPage for PageTwo {
+impl AppPage for ConfigurationsPage {
     fn widget(&self) -> &gtk::Widget {
         self.container.upcast_ref()
     }

@@ -2,7 +2,7 @@ use anyhow::Result;
 use gtk::prelude::*;
 use gtk::{Application, ApplicationWindow, Stack};
 use crate::pages::{
-    AppPage, MainPage, PageOne, PageThree, PageTwo, EditPage
+    AppPage, MainPage, PageOne, PageThree, ConfigurationsPage, EditPage
 };
 
 pub fn run_app_with_application(app: &Application) -> Result<()> {
@@ -20,13 +20,13 @@ pub fn run_app_with_application(app: &Application) -> Result<()> {
     let edit_page = EditPage::new(stack.clone(), app.clone());
     let main_page = MainPage::new(stack.clone());
     let page_one = PageOne::new(stack.clone());
-    let page_two = PageTwo::new(stack.clone(), edit_page.clone());
+    let configurations_page = ConfigurationsPage::new(stack.clone(), edit_page.clone());
     let page_three = PageThree::new(stack.clone());
 
     // Add the pages to the Stack
     add_page_to_stack(&stack, &main_page, "main");
     add_page_to_stack(&stack, &page_one, "page_one");
-    add_page_to_stack(&stack, &page_two, "page_two");
+    add_page_to_stack(&stack, &configurations_page, "configurations_page");
     add_page_to_stack(&stack, &page_three, "page_three");
     add_page_to_stack(&stack, &edit_page, "edit_page");
 
