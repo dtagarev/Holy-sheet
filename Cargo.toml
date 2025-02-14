@@ -22,4 +22,7 @@ directories = "6.0.0"
 
 # Webkit2gtk for WebView
 webkit2gtk = { version = "2.0.1"}
+# wry = "0.48.1"
+# tao = "0.31.1"
+
 

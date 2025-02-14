@@ -1,56 +1,43 @@
-use gtk::prelude::*;
-use gtk::{Application, ApplicationWindow, Box as GtkBox, Orientation, Button, Label};
-use webkit2gtk::{WebView, WebViewExt};
 use directories::ProjectDirs;
-use pulldown_cmark::{Parser, Options, html};
+use gtk::prelude::*;
+use gtk::{Application, ApplicationWindow, Box as GtkBox, Button, Label, Orientation};
+use pulldown_cmark::{html, Options, Parser};
 use std::fs;
+use std::env;
+use webkit2gtk::WebView;
+use webkit2gtk::WebViewExt;
 
 pub fn run_markdown_viewer(file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let app = Application::new(
-        Some("com.example.holy-sheet.markdown_viewer"),
+    // Set the environment variable to disable DMA-BUF renderer
+    env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+
+    gtk::init().expect("Failed to initialize GTK");
+
+    let application = Application::new(
+        Some("com.example.holy-sheet"),
         Default::default(),
     );
 
     let file_name = file_name.to_string();
-    app.connect_activate(move |app| {
+    application.connect_activate(move |app| {
         let window = ApplicationWindow::new(app);
         window.set_title("Holy Sheet - Markdown Viewer");
         window.set_default_size(800, 600);
 
-        // Главен контейнер за вертикално подреждане
-        let container = GtkBox::new(Orientation::Vertical, 8);
-
-        // Заглавен текст
-        let label = Label::new(Some("Markdown Viewer"));
-        container.pack_start(&label, false, false, 0);
-
-        // Зареждаме съдържанието на markdown файла
-        let md_content = match load_markdown_file(&file_name) {
-            Ok(text) => text,
-            Err(e) => format!("Error loading markdown file: {}", e),
+        let html_content = match load_markdown_file(&file_name) {
+            Ok(content) => markdown_to_html(&content),
+            Err(_) => "<p>File does not exist</p>".to_string(),
         };
 
-        // Създаваме WebView и зареждаме HTML съдържанието
-        let web_view = WebView::new();
-        let html_content = markdown_to_html(&md_content);
-        web_view.load_html(&html_content, None);
+        let webview = WebView::new();
+        webview.load_html(&html_content, None);
 
-        // Слагаме WebView директно в контейнера
-        container.pack_start(&web_view, true, true, 0);
-
-        // Бутон "Назад"
-        let back_btn = Button::with_label("Back to Main");
-        let app_clone = app.clone();
-        back_btn.connect_clicked(move |_| {
-            app_clone.quit();
-        });
-        container.pack_start(&back_btn, false, false, 0);
-
-        window.add(&container);
+        window.add(&webview);
         window.show_all();
     });
 
-    app.run();
+    application.run();
+
     Ok(())
 }
 
