@@ -2,8 +2,11 @@ use web_view::*;
 use pulldown_cmark::{Parser, Options, html};
 use directories::ProjectDirs;
 use std::fs;
+use std::env;
 
 pub fn run_markdown_viewer(file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
+
+    env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
     // Load the Markdown file and convert it to HTML
     let md_content = match load_markdown_file(file_name) {
         Ok(t) => t,
