@@ -52,6 +52,25 @@ pub fn run_markdown_viewer(file_name: &str) -> Result<(), Box<dyn std::error::Er
     Ok(())
 }
 
+pub fn preview_markdown_content(app: &Application, md_content: &str) -> Result<(), Box<dyn std::error::Error>> {
+    // Set the environment variable to disable DMA-BUF renderer
+    env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+
+    let window = ApplicationWindow::new(app);
+    window.set_title("Holy Sheet - Markdown Viewer");
+    window.set_default_size(800, 600);
+
+    let html_content = markdown_to_html(md_content);
+
+    let webview = WebView::new();
+    webview.load_html(&html_content, None);
+
+    window.add(&webview);
+    window.show_all();
+
+    Ok(())
+}
+
 fn load_markdown_file(filename: &str) -> Result<String, String> {
     let proj_dirs = ProjectDirs::from("com", "markdown", "holy-sheet")
         .ok_or("Could not locate config directory")?;
@@ -77,13 +96,13 @@ fn markdown_to_html(md_text: &str) -> String {
 
     format!(
         r#"<!DOCTYPE html>
-<html>
-<head><style>{css}</style></head>
-<body>
-{content}
-</body>
-</html>
-"#,
+        <html>
+        <head><style>{css}</style></head>
+        <body>
+        {content}
+        </body>
+        </html>
+        "#,
         css = css,
         content = html_buf
     )

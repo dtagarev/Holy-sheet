@@ -12,10 +12,11 @@ pub struct EditPage {
     stack: Stack,
     text_view: TextView,
     entry: Entry,
+    app: gtk::Application,
 }
 
 impl EditPage {
-    pub fn new(stack: Stack) -> Self {
+    pub fn new(stack: Stack, app: gtk::Application) -> Self {
         // Главен контейнер за вертикално подреждане
         let container = GtkBox::new(Orientation::Vertical, 8);
 
@@ -51,7 +52,31 @@ impl EditPage {
         }
         container.pack_start(&save_btn, false, false, 0);
 
-        Self { container, stack, text_view, entry }
+        // Бутон за връщане към главната страница
+        let back_btn = Button::with_label("Back to Main");
+        {
+            let stack_clone = stack.clone();
+            back_btn.connect_clicked(move |_| {
+                stack_clone.set_visible_child_name("main");
+            });
+        }
+        container.pack_start(&back_btn, false, false, 0);
+
+        // Бутон за преглед
+        let preview_btn = Button::with_label("Preview");
+        {
+            let app_clone = app.clone();
+            let text_view_clone = text_view.clone();
+            preview_btn.connect_clicked(move |_| {
+                let buffer = text_view_clone.buffer().unwrap();
+                let content = buffer.text(&buffer.start_iter(), &buffer.end_iter(), false).unwrap();
+                if let Err(e) = crate::pages::markdown_viewer::preview_markdown_content(&app_clone, &content) {
+                    eprintln!("Failed to show markdown viewer: {}", e);
+                }
+            });
+        }
+        container.pack_start(&preview_btn, false, false, 0);
+        Self { container, stack, text_view, entry, app }
     }
 }
 
@@ -61,7 +86,7 @@ impl AppPage for EditPage {
     }
 }
 
-/// Запазва съдържанието във файл в `~/.config/holy-sheet/cheatsheets/<filename>`.
+/// Save teh content to a file in `~/.config/holy-sheet/cheatsheets/<filename>`.
 fn save_file(filename: &str, content: &str) -> Result<(), String> {
     let proj_dirs = ProjectDirs::from("com", "example", "holy-sheet")
         .ok_or("Could not locate config directory")?;
