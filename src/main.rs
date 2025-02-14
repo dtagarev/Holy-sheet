@@ -20,7 +20,7 @@ fn main() -> Result<()> {
         //     if args.len() > 2 {
         //         let file_name = &args[2];
         //         println!("Filename: {:?}", file_name);
-                // if let Err(e) = pages::markdown_viewer::run_markdown_viewer("test.md") {
+                // if let Err(e) = pages::markdown_viewer::setup_markdown_viewer(app, "test.md") {
                 //     eprintln!("Error running markdown viewer: {:?}", e);
                 // }
         //     } else {

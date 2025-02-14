@@ -7,10 +7,31 @@ use std::fs;
 use webkit2gtk::WebView;
 use webkit2gtk::WebViewExt;
 
-pub fn run_markdown_viewer(file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub fn setup_markdown_viewer(app: &Application, file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
+
     // Set the environment variable to disable DMA-BUF renderer
     env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
 
+    let window = ApplicationWindow::new(app);
+    window.set_title("Holy Sheet - Markdown Viewer");
+    window.set_default_size(800, 600);
+
+
+    let html_content = match load_markdown_file(file_name) {
+        Ok(content) => markdown_to_html(&content),
+        Err(_) => "<p>File does not exist</p>".to_string(),
+    };
+
+    let webview = WebView::new();
+    webview.load_html(&html_content, None);
+
+    window.add(&webview);
+    window.show_all();
+
+    Ok(())
+}
+
+pub fn run_markdown_viewer(file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
     gtk::init().expect("Failed to initialize GTK");
 
     let application = Application::new(
@@ -20,20 +41,10 @@ pub fn run_markdown_viewer(file_name: &str) -> Result<(), Box<dyn std::error::Er
 
     let file_name = file_name.to_string();
     application.connect_activate(move |app| {
-        let window = ApplicationWindow::new(app);
-        window.set_title("Holy Sheet - Markdown Viewer");
-        window.set_default_size(800, 600);
 
-        let html_content = match load_markdown_file(&file_name) {
-            Ok(content) => markdown_to_html(&content),
-            Err(_) => "<p>File does not exist</p>".to_string(),
-        };
-
-        let webview = WebView::new();
-        webview.load_html(&html_content, None);
-
-        window.add(&webview);
-        window.show_all();
+        if let Err(e) = setup_markdown_viewer(app, &file_name) {
+            eprintln!("Error setting up markdown viewer: {:?}", e);
+        }
     });
 
     application.run();
@@ -66,13 +77,13 @@ fn markdown_to_html(md_text: &str) -> String {
 
     format!(
         r#"<!DOCTYPE html>
-        <html>
-        <head><style>{css}</style></head>
-        <body>
-        {content}
-        </body>
-        </html>
-        "#,
+<html>
+<head><style>{css}</style></head>
+<body>
+{content}
+</body>
+</html>
+"#,
         css = css,
         content = html_buf
     )
