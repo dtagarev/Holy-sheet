@@ -1,5 +1,5 @@
-use gtk4::prelude::*;
-use gtk4::{Box as GtkBox, Orientation, Button, Label, Stack};
+use gtk::prelude::*;
+use gtk::{Box as GtkBox, Orientation, Button, Label, Stack};
 use super::AppPage;
 
 #[derive(Clone)]
@@ -13,7 +13,7 @@ impl PageTwo {
         let container = GtkBox::new(Orientation::Vertical, 8);
 
         let label = Label::new(Some("This is PAGE TWO"));
-        container.append(&label);
+        container.pack_start(&label, false, false, 0);
 
         let back_btn = Button::with_label("Back to Main");
         {
@@ -22,14 +22,14 @@ impl PageTwo {
                 stack_clone.set_visible_child_name("main");
             });
         }
-        container.append(&back_btn);
+        container.pack_start(&back_btn, false, false, 0);
 
         Self { container, stack }
     }
 }
 
 impl AppPage for PageTwo {
-    fn widget(&self) -> &gtk4::Widget {
+    fn widget(&self) -> &gtk::Widget {
         self.container.upcast_ref()
     }
 }

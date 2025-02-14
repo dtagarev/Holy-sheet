@@ -1,5 +1,5 @@
-use gtk4::prelude::*;
-use gtk4::{Box as GtkBox, Orientation, Button, Label, Stack, TextView, ScrolledWindow, Entry};
+use gtk::prelude::*;
+use gtk::{Box as GtkBox, Orientation, Button, Label, Stack, TextView, ScrolledWindow, Entry};
 use directories::ProjectDirs;
 use std::fs;
 use std::path::PathBuf;
@@ -21,54 +21,42 @@ impl EditPage {
 
         // Заглавен текст
         let label = Label::new(Some("Edit your cheatsheet"));
-        container.append(&label);
+        container.pack_start(&label, false, false, 0);
 
         // Поле за въвеждане на име на файла
         let entry = Entry::new();
         entry.set_placeholder_text(Some("Enter file name"));
-        container.append(&entry);
+        container.pack_start(&entry, false, false, 0);
 
         // Създаваме TextView за редактиране на съдържанието
         let text_view = TextView::new();
-        let scrolled = ScrolledWindow::new();
-        scrolled.set_policy(gtk4::PolicyType::Automatic, gtk4::PolicyType::Automatic);
-        scrolled.set_child(Some(&text_view));
-        container.append(&scrolled);
+        let scrolled = ScrolledWindow::new(None::<&gtk::Adjustment>, None::<&gtk::Adjustment>);
+        scrolled.set_policy(gtk::PolicyType::Automatic, gtk::PolicyType::Automatic);
+        scrolled.add(&text_view);
+        container.pack_start(&scrolled, true, true, 0);
 
         // Бутон за запазване
         let save_btn = Button::with_label("Save");
         {
-            let stack_clone = stack.clone();
-            let text_view_clone = text_view.clone();
             let entry_clone = entry.clone();
+            let text_view_clone = text_view.clone();
             save_btn.connect_clicked(move |_| {
-                let file_name = entry_clone.text().to_string();
-                let content = text_view_clone.buffer().text(&text_view_clone.buffer().start_iter(), &text_view_clone.buffer().end_iter(), false).to_string();
-                if let Err(e) = save_file(&file_name, &content) {
-                    eprintln!("Error saving file: {}", e);
-                } else {
-                    stack_clone.set_visible_child_name("main");
+                let filename = entry_clone.text().to_string();
+                let buffer = text_view_clone.buffer().unwrap();
+                let content = buffer.text(&buffer.start_iter(), &buffer.end_iter(), false).unwrap();
+                if let Err(e) = save_file(&filename, &content) {
+                    eprintln!("Failed to save file: {}", e);
                 }
             });
         }
-        container.append(&save_btn);
-
-        // Бутон "Назад"
-        let back_btn = Button::with_label("Back to Main");
-        {
-            let stack_clone = stack.clone();
-            back_btn.connect_clicked(move |_| {
-                stack_clone.set_visible_child_name("main");
-            });
-        }
-        container.append(&back_btn);
+        container.pack_start(&save_btn, false, false, 0);
 
         Self { container, stack, text_view, entry }
     }
 }
 
 impl AppPage for EditPage {
-    fn widget(&self) -> &gtk4::Widget {
+    fn widget(&self) -> &gtk::Widget {
         self.container.upcast_ref()
     }
 }

@@ -1,4 +1,3 @@
-
 [package]
 name = "holy-sheet"
 version = "0.1.0"
@@ -13,21 +12,14 @@ path = "src/main.rs"
 anyhow = "1.0"
 clap = { version = "4.5.29", features = ["derive"] }
 
-# GTK4
-# webview-sys = "0.6.2"
-# web-view = "0.7"
-wry = "0.48.1"
-winit = "0.30.9"
-gtk4 = "0.9.5"
+# GTK3
+gtk = "0.18.2"
 glib = "0.20.7"
-gdk4 = "0.9.5"
-webkit2gtk = { version = "2.0.1", features = ["v2_34"] }   
+gdk = "0.18.2"
 pulldown-cmark = "0.13.0"    # From Markdown -> HTML
 # За четене на конфигурационни пътища (XDG dirs)
 directories = "6.0.0"
-# gtk="0.18.1"
 
-# За евентуално JSON/сериализация (не е критично в този пример, но е полезно)
-# serde = { version = "1.0", features = ["derive"] }
-# serde_json = "1.0"
+# Webkit2gtk for WebView
+webkit2gtk = { version = "2.0.1"}
 

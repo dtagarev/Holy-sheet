@@ -1,5 +1,5 @@
-use gtk4::prelude::*;
-use gtk4::{Box as GtkBox, Orientation, Button, Label, Stack, TextView, ScrolledWindow};
+use gtk::prelude::*;
+use gtk::{Box as GtkBox, Orientation, Button, Label, Stack, TextView, ScrolledWindow};
 use directories::ProjectDirs;
 use std::path::PathBuf;
 use std::fs;
@@ -18,7 +18,7 @@ impl PageOne {
         let container = GtkBox::new(Orientation::Vertical, 8);
         // Заглавен текст
         let label = Label::new(Some("This is PAGE ONE (Cheatsheet)"));
-        container.append(&label);
+        container.pack_start(&label, false, false, 0);
 
         // Зареждаме съдържанието на markdown файла
         // (примерно "page_one.md")
@@ -29,18 +29,18 @@ impl PageOne {
 
         // Създаваме TextView и слагаме текста
         let text_view = TextView::new();
-        if let buffer = text_view.buffer() {
+        if let Some(buffer) = text_view.buffer() {
             buffer.set_text(&md_content);
         }
         // Правим го read-only
         text_view.set_editable(false);
         text_view.set_cursor_visible(false);
-         // Слагаме TextView в ScrolledWindow, за да може да се скролва
-        let scrolled = ScrolledWindow::new();
-        scrolled.set_policy(gtk4::PolicyType::Automatic, gtk4::PolicyType::Automatic);
-        scrolled.set_child(Some(&text_view));
+        // Слагаме TextView в ScrolledWindow, за да може да се скролва
+        let scrolled = ScrolledWindow::new(None::<&gtk::Adjustment>, None::<&gtk::Adjustment>);
+        scrolled.set_policy(gtk::PolicyType::Automatic, gtk::PolicyType::Automatic);
+        scrolled.add(&text_view);
 
-        container.append(&scrolled);
+        container.pack_start(&scrolled, true, true, 0);
         // Бутон "Назад"
         let back_btn = Button::with_label("Back to Main");
         {
@@ -50,13 +50,13 @@ impl PageOne {
                 stack_clone.set_visible_child_name("main");
             });
         }
-        container.append(&back_btn);
+        container.pack_start(&back_btn, false, false, 0);
         Self { container, stack }
     }
 }
 
 impl AppPage for PageOne {
-    fn widget(&self) -> &gtk4::Widget {
+    fn widget(&self) -> &gtk::Widget {
         self.container.upcast_ref()
     }
 }

@@ -5,7 +5,7 @@ pub mod page_three;
 pub mod edit_page;
 pub mod markdown_viewer;
 
-use gtk4::Widget;
+use gtk::Widget;
 
 /// Общ trait за страниците
 pub trait AppPage {

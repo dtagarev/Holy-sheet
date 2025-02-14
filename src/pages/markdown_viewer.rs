@@ -1,53 +1,56 @@
-use gtk4::prelude::*;
-use gtk4::{Application, ApplicationWindow, Box as GtkBox, Orientation, Button, Label};
+use gtk::prelude::*;
+use gtk::{Application, ApplicationWindow, Box as GtkBox, Orientation, Button, Label};
+use webkit2gtk::{WebView, WebViewExt};
 use directories::ProjectDirs;
 use pulldown_cmark::{Parser, Options, html};
 use std::fs;
-use winit::application::ApplicationHandler;
-use winit::event::WindowEvent;
-use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop};
-use winit::window::{Window, WindowId};
-use wry::WebViewBuilder;
-use gtk4::builders::WindowBuilder;
-
-#[derive(Default)]
-struct App {
-    window: Option<Window>,
-    webview: Option<wry::WebView>,
-}
-
-impl ApplicationHandler for App {
-    fn resumed(&mut self, event_loop: &ActiveEventLoop) {
-        let window = event_loop.create_window(Window::default_attributes()).unwrap();
-        let html_content = match load_markdown_file("test.md") {
-            Ok(content) => markdown_to_html(&content),
-            Err(_) => "<p>File does not exist</p>".to_string(),
-        };
-        let webview = WebViewBuilder::new()
-            .with_url(&format!("data:text/html,{}", html_content))
-            .build(&window)
-            .unwrap();
-
-        self.window = Some(window);
-        self.webview = Some(webview);
-    }
-
-    fn about_to_wait(&mut self, _event_loop: &ActiveEventLoop) {
-        #[cfg(target_os = "linux")]
-        while gtk::events_pending() {
-          gtk::main_iteration_do(false);
-        }
-    }
-
-    fn window_event(&mut self, _event_loop: &ActiveEventLoop, _window_id: WindowId, _event: WindowEvent) {}
-}
 
 pub fn run_markdown_viewer(file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
-    gtk4::init().expect("Failed to initialize GTK");
+    let app = Application::new(
+        Some("com.example.holy-sheet.markdown_viewer"),
+        Default::default(),
+    );
 
-    let event_loop = EventLoop::new().unwrap();
-    let mut app = App::default();
-    event_loop.run_app(&mut app).unwrap();
+    let file_name = file_name.to_string();
+    app.connect_activate(move |app| {
+        let window = ApplicationWindow::new(app);
+        window.set_title("Holy Sheet - Markdown Viewer");
+        window.set_default_size(800, 600);
+
+        // Главен контейнер за вертикално подреждане
+        let container = GtkBox::new(Orientation::Vertical, 8);
+
+        // Заглавен текст
+        let label = Label::new(Some("Markdown Viewer"));
+        container.pack_start(&label, false, false, 0);
+
+        // Зареждаме съдържанието на markdown файла
+        let md_content = match load_markdown_file(&file_name) {
+            Ok(text) => text,
+            Err(e) => format!("Error loading markdown file: {}", e),
+        };
+
+        // Създаваме WebView и зареждаме HTML съдържанието
+        let web_view = WebView::new();
+        let html_content = markdown_to_html(&md_content);
+        web_view.load_html(&html_content, None);
+
+        // Слагаме WebView директно в контейнера
+        container.pack_start(&web_view, true, true, 0);
+
+        // Бутон "Назад"
+        let back_btn = Button::with_label("Back to Main");
+        let app_clone = app.clone();
+        back_btn.connect_clicked(move |_| {
+            app_clone.quit();
+        });
+        container.pack_start(&back_btn, false, false, 0);
+
+        window.add(&container);
+        window.show_all();
+    });
+
+    app.run();
     Ok(())
 }
 
