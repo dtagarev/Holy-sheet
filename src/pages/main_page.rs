@@ -17,6 +17,7 @@ impl MainPage {
 
         // Бутон за PageOne
         let btn_one = Button::with_label("Go to Page ONE");
+        btn_one.style_context().add_class("button");
         {
             let stack_clone = stack.clone();
             btn_one.connect_clicked(move |_| {
@@ -27,6 +28,7 @@ impl MainPage {
 
         // Бутон за ConfigurationsPage
         let btn_two = Button::with_label("Go to CheatSheets");
+        btn_two.style_context().add_class("button");
         {
             let stack_clone = stack.clone();
             btn_two.connect_clicked(move |_| {
@@ -37,6 +39,7 @@ impl MainPage {
 
         // Бутон за PageThree
         let btn_three = Button::with_label("Go to Page THREE");
+        btn_three.style_context().add_class("button");
         {
             let stack_clone = stack.clone();
             btn_three.connect_clicked(move |_| {
@@ -47,6 +50,7 @@ impl MainPage {
 
         // Бутон за EditPage
         let btn_edit = Button::with_label("Create/Edit Cheatsheet");
+        btn_edit.style_context().add_class("button");
         {
             let stack_clone = stack.clone();
             btn_edit.connect_clicked(move |_| {

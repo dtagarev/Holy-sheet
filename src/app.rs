@@ -1,14 +1,23 @@
 use anyhow::Result;
 use gtk::prelude::*;
-use gtk::{Application, ApplicationWindow, Stack};
+use gtk::{Application, ApplicationWindow, CssProvider, StyleContext, Stack};
 use crate::pages::{
     AppPage, MainPage, PageOne, PageThree, ConfigurationsPage, EditPage
 };
 
 pub fn run_app_with_application(app: &Application) -> Result<()> {
     let window = ApplicationWindow::new(app);
-    window.set_title("Holy Sheet - 4 Pages Example");
+    window.set_title("Holy Sheet");
     window.set_default_size(600, 400);
+
+    // Load CSS
+    let provider = CssProvider::new();
+    provider.load_from_data(include_bytes!("pages/style/style.css")).expect("Failed to load CSS");
+    StyleContext::add_provider_for_screen(
+        &gdk::Screen::default().expect("Error initializing GTK CSS provider."),
+        &provider,
+        gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+    );
 
     // Create a Stack that will hold all the pages
     let stack = Stack::new();
