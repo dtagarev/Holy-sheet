@@ -1,45 +1,60 @@
-use web_view::*;
-use pulldown_cmark::{Parser, Options, html};
+use gtk4::prelude::*;
+use gtk4::{Application, ApplicationWindow, Box as GtkBox, Orientation, Button, Label};
 use directories::ProjectDirs;
+use pulldown_cmark::{Parser, Options, html};
 use std::fs;
+use winit::application::ApplicationHandler;
+use winit::event::WindowEvent;
+use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop};
+use winit::window::{Window, WindowId};
+use wry::WebViewBuilder;
+use gtk4::builders::WindowBuilder;
+
+#[derive(Default)]
+struct App {
+    window: Option<Window>,
+    webview: Option<wry::WebView>,
+}
+
+impl ApplicationHandler for App {
+    fn resumed(&mut self, event_loop: &ActiveEventLoop) {
+        let window = event_loop.create_window(Window::default_attributes()).unwrap();
+        let html_content = match load_markdown_file("test.md") {
+            Ok(content) => markdown_to_html(&content),
+            Err(_) => "<p>File does not exist</p>".to_string(),
+        };
+        let webview = WebViewBuilder::new()
+            .with_url(&format!("data:text/html,{}", html_content))
+            .build(&window)
+            .unwrap();
+
+        self.window = Some(window);
+        self.webview = Some(webview);
+    }
+
+    fn about_to_wait(&mut self, _event_loop: &ActiveEventLoop) {
+        #[cfg(target_os = "linux")]
+        while gtk::events_pending() {
+          gtk::main_iteration_do(false);
+        }
+    }
+
+    fn window_event(&mut self, _event_loop: &ActiveEventLoop, _window_id: WindowId, _event: WindowEvent) {}
+}
 
 pub fn run_markdown_viewer(file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
-    // Load the Markdown file and convert it to HTML
-    let md_content = match load_markdown_file(file_name) {
-        Ok(t) => t,
-        Err(e) => format!("Error reading MD file:\n{}", e),
-    };
-    // let html_content = markdown_to_html(&md_content);
+    gtk4::init().expect("Failed to initialize GTK");
 
-    let html_content = "<html><body><h1>Hello, World!</h1></body></html>";
-    // Create the WebView
-    // web_view::builder()
-    //     .title("Holy Sheet - Markdown Viewer")
-    //     .content(Content::Html(html_content))
-    //     .size(800, 600)
-    //     .resizable(true)
-    //     .debug(true)
-    //     .user_data(())
-    //     .invoke_handler(|_webview, _arg| Ok(()))
-    //     .run()?;
-    web_view::builder()
-    .title("My Project")
-    .content(Content::Html(html_content))
-    .size(320, 480)
-    .resizable(false)
-    .debug(true)
-    .user_data(())
-    .invoke_handler(|_webview, _arg| Ok(()))
-    .run()
-    .unwrap();
-
+    let event_loop = EventLoop::new().unwrap();
+    let mut app = App::default();
+    event_loop.run_app(&mut app).unwrap();
     Ok(())
 }
 
 fn load_markdown_file(filename: &str) -> Result<String, String> {
     let proj_dirs = ProjectDirs::from("com", "example", "holy-sheet")
         .ok_or("Could not locate config directory")?;
-    let config_dir = proj_dirs.config_dir();
+    let config_dir = proj_dirs.config_dir().join("cheatsheets");
     let file_path = config_dir.join(filename);
 
     let content = fs::read_to_string(&file_path)
