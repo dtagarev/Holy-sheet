@@ -78,6 +78,22 @@ impl EditPage {
         container.pack_start(&preview_btn, false, false, 0);
         Self { container, stack, text_view, entry, app }
     }
+
+    pub fn load_configuration(&self, filename: &str) {
+        let proj_dirs = ProjectDirs::from("com", "example", "holy-sheet")
+            .expect("Could not locate config directory");
+        let config_dir = proj_dirs.config_dir().join("cheatsheets");
+        let file_path = config_dir.join(format!("{}.md", filename));
+
+        if let Ok(content) = fs::read_to_string(&file_path) {
+            if let Some(buffer) = self.text_view.buffer() {
+                buffer.set_text(&content);
+            }
+            self.entry.set_text(filename);
+        } else {
+            eprintln!("Failed to load configuration: {}", filename);
+        }
+    }
 }
 
 impl AppPage for EditPage {

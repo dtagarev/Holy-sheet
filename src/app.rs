@@ -15,13 +15,13 @@ pub fn run_app_with_application(app: &Application) -> Result<()> {
     stack.set_transition_type(gtk::StackTransitionType::SlideLeftRight);
     stack.set_transition_duration(200);
 
-    // Crate instances of the pages. In the constructor
+    // Create instances of the pages. In the constructor
     // we pass &stack, so they can switch to another page.
+    let edit_page = EditPage::new(stack.clone(), app.clone());
     let main_page = MainPage::new(stack.clone());
     let page_one = PageOne::new(stack.clone());
-    let page_two = PageTwo::new(stack.clone());
+    let page_two = PageTwo::new(stack.clone(), edit_page.clone());
     let page_three = PageThree::new(stack.clone());
-    let edit_page = EditPage::new(stack.clone(), app.clone());
 
     // Add the pages to the Stack
     add_page_to_stack(&stack, &main_page, "main");
@@ -38,4 +38,7 @@ pub fn run_app_with_application(app: &Application) -> Result<()> {
 
 fn add_page_to_stack(stack: &Stack, page: &impl AppPage, id: &str) {
     stack.add_named(page.widget(), id);
+    if id == "edit_page" {
+        stack.set_child_name(page.widget(), Some("edit_page"));
+    }
 }
