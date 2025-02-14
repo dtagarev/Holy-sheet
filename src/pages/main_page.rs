@@ -1,5 +1,5 @@
 use gtk::prelude::*;
-use gtk::{Box as GtkBox, Orientation, Button, Label, Stack};
+use gtk::{Box as GtkBox, Orientation, Button, Label, Stack, Image};
 use super::AppPage;
 
 #[derive(Clone)]
@@ -12,7 +12,11 @@ impl MainPage {
     pub fn new(stack: Stack) -> Self {
         let container = GtkBox::new(Orientation::Vertical, 8);
 
-        let label = Label::new(Some("This is the MAIN page.\nChoose a sub-page:"));
+        // Add the logo
+        let logo = Image::from_file("Logo/Logo.svg");
+        container.pack_start(&logo, false, false, 0);
+
+        let label = Label::new(Some("Holy sheet\nThe ultimate cheatsheet manager"));
         container.pack_start(&label, false, false, 0);
 
         // Бутон за PageOne
