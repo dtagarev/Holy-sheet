@@ -16,8 +16,12 @@ impl MainPage {
         let logo = Image::from_file("Logo/Logo.svg");
         container.pack_start(&logo, false, false, 0);
 
-        let label = Label::new(Some("Holy sheet\nThe ultimate cheatsheet manager"));
+        let label = Label::new(Some("Holy sheet"));
+        let label2 = Label::new(Some("The ultimate cheatsheet manager"));
+        label.style_context().add_class("title"); // Apply title class
+        label2.style_context().add_class("subtitle"); // Apply subtitle class
         container.pack_start(&label, false, false, 0);
+        container.pack_start(&label2, false, false, 0);
 
         // Бутон за PageOne
         let btn_one = Button::with_label("Go to Page ONE");

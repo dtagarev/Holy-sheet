@@ -41,3 +41,12 @@ label {
     background-color: #2A2E32;
     color: #e0e0e0;
 }
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.subtitle {
+    font-size: 20px;
+}
