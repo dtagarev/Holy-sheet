@@ -8,23 +8,13 @@ pub fn run_markdown_viewer(file_name: &str) -> Result<(), Box<dyn std::error::Er
 
     env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
     // Load the Markdown file and convert it to HTML
+    
     let md_content = match load_markdown_file(file_name) {
         Ok(t) => t,
         Err(e) => format!("Error reading MD file:\n{}", e),
     };
     let html_content = markdown_to_html(&md_content);
 
-    // let html_content = "<html><body><h1>Hello, World!</h1></body></html>";
-    // Create the WebView
-    // web_view::builder()
-    //     .title("Holy Sheet - Markdown Viewer")
-    //     .content(Content::Html(html_content))
-    //     .size(800, 600)
-    //     .resizable(true)
-    //     .debug(true)
-    //     .user_data(())
-    //     .invoke_handler(|_webview, _arg| Ok(()))
-    //     .run()?;
     web_view::builder()
     .title("My Project")
     .content(Content::Html(html_content))
@@ -61,23 +51,6 @@ fn markdown_to_html(md_text: &str) -> String {
 
     let css = fs::read_to_string("src/pages/style/dark_theme.css")
         .expect("Failed to read CSS file");
-    // let css = r#"
-
-    // <style>
-    //     body {
-    //         font-family: sans-serif;
-    //         margin: 1rem;
-    //     }
-    //     h1, h2, h3 {
-    //         color: #2d76d9;
-    //     }
-    //     code {
-    //         background: #f4f4f4;
-    //         padding: 2px 4px;
-    //         border-radius: 4px;
-    //     }
-    // </style>
-    // "#;
 
     format!(
         r#"<!DOCTYPE html>
@@ -91,16 +64,4 @@ fn markdown_to_html(md_text: &str) -> String {
         css = css,
         content = html_buf
     )
-    // format!(
-    //     r#"<!DOCTYPE html>
-    //     <html>
-    //     <head>{css}</head>
-    //     <body>
-    //     {content}
-    //     </body>
-    //     </html>
-    //     "#,
-    //     css = css,
-    //     content = html_buf
-    // )
 }
