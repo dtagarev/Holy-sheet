@@ -7,14 +7,14 @@ pub mod markdown_viewer;
 
 use gtk::Widget;
 
-/// Общ trait за страниците
+/// Common trait for the pages
 pub trait AppPage {
-    /// Връща главния widget на страницата (Box, Grid и т.н.),
-    /// който се поставя в Stack.
+    /// Returs the main widget of the page (Box, Grid, etc.),
+    /// which is added to the Stack.
     fn widget(&self) -> &Widget;
 }
 
-// Ребрандираме ги за по-лесен достъп отвън
+// Rebrand for easy outside access
 pub use main_page::MainPage;
 pub use page_one::PageOne;
 pub use page_two::PageTwo;
