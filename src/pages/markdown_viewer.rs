@@ -12,9 +12,9 @@ pub fn run_markdown_viewer(file_name: &str) -> Result<(), Box<dyn std::error::Er
         Ok(t) => t,
         Err(e) => format!("Error reading MD file:\n{}", e),
     };
-    // let html_content = markdown_to_html(&md_content);
+    let html_content = markdown_to_html(&md_content);
 
-    let html_content = "<html><body><h1>Hello, World!</h1></body></html>";
+    // let html_content = "<html><body><h1>Hello, World!</h1></body></html>";
     // Create the WebView
     // web_view::builder()
     //     .title("Holy Sheet - Markdown Viewer")
@@ -42,7 +42,7 @@ pub fn run_markdown_viewer(file_name: &str) -> Result<(), Box<dyn std::error::Er
 fn load_markdown_file(filename: &str) -> Result<String, String> {
     let proj_dirs = ProjectDirs::from("com", "example", "holy-sheet")
         .ok_or("Could not locate config directory")?;
-    let config_dir = proj_dirs.config_dir();
+    let config_dir = proj_dirs.config_dir().join("cheatsheets");
     let file_path = config_dir.join(filename);
 
     let content = fs::read_to_string(&file_path)
@@ -59,33 +59,48 @@ fn markdown_to_html(md_text: &str) -> String {
     let mut html_buf = String::new();
     html::push_html(&mut html_buf, parser);
 
-    let css = r#"
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 1rem;
-        }
-        h1, h2, h3 {
-            color: #2d76d9;
-        }
-        code {
-            background: #f4f4f4;
-            padding: 2px 4px;
-            border-radius: 4px;
-        }
-    </style>
-    "#;
+    let css = fs::read_to_string("src/pages/style/dark_theme.css")
+        .expect("Failed to read CSS file");
+    // let css = r#"
+
+    // <style>
+    //     body {
+    //         font-family: sans-serif;
+    //         margin: 1rem;
+    //     }
+    //     h1, h2, h3 {
+    //         color: #2d76d9;
+    //     }
+    //     code {
+    //         background: #f4f4f4;
+    //         padding: 2px 4px;
+    //         border-radius: 4px;
+    //     }
+    // </style>
+    // "#;
 
     format!(
         r#"<!DOCTYPE html>
-<html>
-<head>{css}</head>
-<body>
-{content}
-</body>
-</html>
-"#,
+        <html>
+        <head><style>{css}</style></head>
+        <body>
+        {content}
+        </body>
+        </html>
+    "#,
         css = css,
         content = html_buf
     )
+    // format!(
+    //     r#"<!DOCTYPE html>
+    //     <html>
+    //     <head>{css}</head>
+    //     <body>
+    //     {content}
+    //     </body>
+    //     </html>
+    //     "#,
+    //     css = css,
+    //     content = html_buf
+    // )
 }
