@@ -1,22 +1,18 @@
 pub mod main_page;
-pub mod page_one;
-pub mod page_two;
-pub mod page_three;
+pub mod configurations_page;
 pub mod edit_page;
 pub mod markdown_viewer;
 
-use gtk4::Widget;
+use gtk::Widget;
 
-/// Общ trait за страниците
+/// Common trait for the pages
 pub trait AppPage {
-    /// Връща главния widget на страницата (Box, Grid и т.н.),
-    /// който се поставя в Stack.
+    /// Returs the main widget of the page (Box, Grid, etc.),
+    /// which is added to the Stack.
     fn widget(&self) -> &Widget;
 }
 
-// Ребрандираме ги за по-лесен достъп отвън
+// Rebrand for easy outside access
 pub use main_page::MainPage;
-pub use page_one::PageOne;
-pub use page_two::PageTwo;
-pub use page_three::PageThree;
+pub use configurations_page::ConfigurationsPage;
 pub use edit_page::EditPage;

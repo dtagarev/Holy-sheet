@@ -1,58 +1,78 @@
-use gtk4::prelude::*;
-use gtk4::{Application, ApplicationWindow, Box as GtkBox, Orientation, Button, Label};
 use directories::ProjectDirs;
-use pulldown_cmark::{Parser, Options, html};
+use gtk::prelude::*;
+use gtk::{Application, ApplicationWindow};
+use pulldown_cmark::{html, Options, Parser};
+use std::env;
 use std::fs;
-use winit::application::ApplicationHandler;
-use winit::event::WindowEvent;
-use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop};
-use winit::window::{Window, WindowId};
-use wry::WebViewBuilder;
-use gtk4::builders::WindowBuilder;
+use webkit2gtk::WebView;
+use webkit2gtk::WebViewExt;
 
-#[derive(Default)]
-struct App {
-    window: Option<Window>,
-    webview: Option<wry::WebView>,
+pub fn setup_markdown_viewer(app: &Application, file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
+
+    // Set the environment variable to disable DMA-BUF renderer
+    env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+
+    let window = ApplicationWindow::new(app);
+    window.set_title("Holy Sheet - Markdown Viewer");
+    window.set_default_size(800, 600);
+
+
+    let html_content = match load_markdown_file(file_name) {
+        Ok(content) => markdown_to_html(&content),
+        Err(_) => "<p>File does not exist</p>".to_string(),
+    };
+
+    let webview = WebView::new();
+    webview.load_html(&html_content, None);
+
+    window.add(&webview);
+    window.show_all();
+
+    Ok(())
 }
 
-impl ApplicationHandler for App {
-    fn resumed(&mut self, event_loop: &ActiveEventLoop) {
-        let window = event_loop.create_window(Window::default_attributes()).unwrap();
-        let html_content = match load_markdown_file("test.md") {
-            Ok(content) => markdown_to_html(&content),
-            Err(_) => "<p>File does not exist</p>".to_string(),
-        };
-        let webview = WebViewBuilder::new()
-            .with_url(&format!("data:text/html,{}", html_content))
-            .build(&window)
-            .unwrap();
+pub fn run_markdown_viewer_as_an_app(file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
+    gtk::init().expect("Failed to initialize GTK");
 
-        self.window = Some(window);
-        self.webview = Some(webview);
-    }
+    let application = Application::new(
+        Some("com.markdown.holy-sheet"),
+        Default::default(),
+    );
 
-    fn about_to_wait(&mut self, _event_loop: &ActiveEventLoop) {
-        #[cfg(target_os = "linux")]
-        while gtk::events_pending() {
-          gtk::main_iteration_do(false);
+    let file_name = file_name.to_string();
+    application.connect_activate(move |app| {
+
+        if let Err(e) = setup_markdown_viewer(app, &file_name) {
+            eprintln!("Error setting up markdown viewer: {:?}", e);
         }
-    }
+    });
 
-    fn window_event(&mut self, _event_loop: &ActiveEventLoop, _window_id: WindowId, _event: WindowEvent) {}
+    application.run();
+
+    Ok(())
 }
 
-pub fn run_markdown_viewer(file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
-    gtk4::init().expect("Failed to initialize GTK");
+pub fn preview_markdown_content(app: &Application, md_content: &str) -> Result<(), Box<dyn std::error::Error>> {
+    // Set the environment variable to disable DMA-BUF renderer
+    env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
 
-    let event_loop = EventLoop::new().unwrap();
-    let mut app = App::default();
-    event_loop.run_app(&mut app).unwrap();
+    let window = ApplicationWindow::new(app);
+    window.set_title("Holy Sheet - Markdown Viewer");
+    window.set_default_size(800, 600);
+
+    let html_content = markdown_to_html(md_content);
+
+    let webview = WebView::new();
+    webview.load_html(&html_content, None);
+
+    window.add(&webview);
+    window.show_all();
+
     Ok(())
 }
 
 fn load_markdown_file(filename: &str) -> Result<String, String> {
-    let proj_dirs = ProjectDirs::from("com", "example", "holy-sheet")
+    let proj_dirs = ProjectDirs::from("com", "markdown", "holy-sheet")
         .ok_or("Could not locate config directory")?;
     let config_dir = proj_dirs.config_dir().join("cheatsheets");
     let file_path = config_dir.join(filename);
@@ -71,32 +91,18 @@ fn markdown_to_html(md_text: &str) -> String {
     let mut html_buf = String::new();
     html::push_html(&mut html_buf, parser);
 
-    let css = r#"
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 1rem;
-        }
-        h1, h2, h3 {
-            color: #2d76d9;
-        }
-        code {
-            background: #f4f4f4;
-            padding: 2px 4px;
-            border-radius: 4px;
-        }
-    </style>
-    "#;
+    let css = fs::read_to_string("src/pages/style/dark_theme.css")
+        .expect("Failed to read CSS file");
 
     format!(
         r#"<!DOCTYPE html>
-<html>
-<head>{css}</head>
-<body>
-{content}
-</body>
-</html>
-"#,
+        <html>
+        <head><style>{css}</style></head>
+        <body>
+        {content}
+        </body>
+        </html>
+        "#,
         css = css,
         content = html_buf
     )
