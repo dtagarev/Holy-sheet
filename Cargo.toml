@@ -25,4 +25,21 @@ webkit2gtk = { version = "2.0.1"}
 # wry = "0.48.1"
 # tao = "0.31.1"
 
+[dev-dependencies]
+gtk = "0.18.2"
+glib = "0.20.7"
+gdk = "0.18.2"
+pulldown-cmark = "0.13.0"    # From Markdown -> HTML
+# За четене на конфигурационни пътища (XDG dirs)
+directories = "6.0.0"
+
+
+[[test]]
+name = "test_markdown_viewer"
+path = "tests/test_markdown_viewer.rs"
+
+[[test]]
+name = "test_edit_page"
+path = "tests/test_edit_page.rs"
+
 
